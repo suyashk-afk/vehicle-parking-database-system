@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Parking Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header .subtitle {
+            color: #718096;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .space-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .space-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 60px;
+            position: relative;
+        }
+
+        .space-available {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #9ae6b4;
+        }
+
+        .space-occupied {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #fc8181;
+        }
+
+        .space-id {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .space-type {
+            font-size: 0.6rem;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .space-license {
+            font-size: 0.5rem;
+            margin-top: 2px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .sessions-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .session-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .license-plate {
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+
+        .vehicle-type {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .session-details {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .demo-controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .demo-controls h2 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .demo-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .utilization-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .utilization-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <i class="fas fa-car"></i>
+            Vehicle Parking Management System
+        </h1>
+        <div class="subtitle">Smart Parking Management Solution</div>
+    </div>
+
+    <div class="container">
+        <!-- Demo Controls -->
+        <div class="demo-controls">
+            <h2><i class="fas fa-cogs"></i> System Controls</h2>
+            <p style="margin-bottom: 1.5rem; color: #718096;">Manage demo data and system operations</p>
+            <div class="demo-buttons">
+                <button class="btn btn-secondary" onclick="populateDemoData()">
+                    <i class="fas fa-database"></i> Load Sample Data
+                </button>
+                <button class="btn btn-danger" onclick="resetDemoData()">
+                    <i class="fas fa-refresh"></i> Clear All Data
+                </button>
+                <button class="btn" onclick="refreshAll()">
+                    <i class="fas fa-sync"></i> Refresh Dashboard
+                </button>
+                <button class="btn btn-danger" onclick="resetRevenue()">
+                    <i class="fas fa-trash"></i> Reset Revenue
+                </button>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alert" class="alert"></div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Availability Overview -->
+            <div class="card animate__animated animate__fadeInUp">
+                <h2><i class="fas fa-chart-pie"></i> Parking Availability</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-capacity">0</span>
+                        <div class="stat-label">Total Spaces</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="occupied-spaces">0</span>
+                        <div class="stat-label">Occupied</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="available-spaces">0</span>
+                        <div class="stat-label">Available</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="utilization">0%</span>
+                        <div class="stat-label">Utilization</div>
+                    </div>
+                </div>
+                <div class="utilization-bar">
+                    <div class="utilization-fill" id="utilization-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Vehicle Entry -->
+            <div class="card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <h2><i class="fas fa-sign-in-alt"></i> Vehicle Entry</h2>
+                <form id="entry-form">
+                    <div class="form-group">
+                        <label for="entry-license">License Plate</label>
+                        <input type="text" id="entry-license" placeholder="e.g., MH01AB1234" maxlength="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-type">Vehicle Type</label>
+                        <select id="entry-type" required>
+                            <option value="">Select Type</option>
+                            <option value="CAR">Car</option>
+                            <option value="MOTORCYCLE">Motorcycle</option>
+                            <option value="TRUCK">Truck</option>
+                            <option value="VAN">Van</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-plus"></i> Enter Vehicle
+                    </button>
+                </form>
+            </div>
+
+            <!-- Vehicle Exit -->
+            <div class="card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <h2><i class="fas fa-sign-out-alt"></i> Vehicle Exit</h2>
+                <form id="exit-form">
+                    <div class="form-group">
+                        <label for="exit-license">License Plate</label>
+                        <input type="text" id="exit-license" placeholder="e.g., MH01AB1234" maxlength="10" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-minus"></i> Exit Vehicle
+                    </button>
+                </form>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <h2><i class="fas fa-clock"></i> Active Sessions</h2>
+                <div id="active-sessions" class="sessions-list">
+                    <p style="text-align: center; color: #718096;">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Parking Spaces Visual -->
+            <div class="card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                <h2><i class="fas fa-th"></i> Parking Spaces</h2>
+                <div id="parking-spaces" class="space-grid">
+                    <p style="text-align: center; color: #718096;">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Revenue Report -->
+            <div class="card animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+                <h2><i class="fas fa-rupee-sign"></i> Revenue Report</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-revenue">₹0</span>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-sessions">0</span>
+                        <div class="stat-label">Completed Sessions</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <strong>Average Duration:</strong> <span id="avg-duration">0</span> minutes<br>
+                    <small style="color: #718096; margin-top: 0.5rem; display: block;">
+                        Rates: Car ₹20/hr • Motorcycle ₹10/hr • Truck ₹50/hr • Van ₹30/hr
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh data every 3 seconds for better real-time feel
+        setInterval(refreshAll, 3000);
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshAll();
+        });
+
+        // Form handlers
+        document.getElementById('entry-form').addEventListener('submit', handleVehicleEntry);
+        document.getElementById('exit-form').addEventListener('submit', handleVehicleExit);
+
+        async function handleVehicleEntry(e) {
+            e.preventDefault();
+            const licensePlate = document.getElementById('entry-license').value.toUpperCase();
+            const vehicleType = document.getElementById('entry-type').value;
+
+            try {
+                const response = await fetch('/api/enter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ licensePlate, vehicleType })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(`✅ Vehicle ${licensePlate} entered successfully! Space: ${result.session.spaceId}`, 'success');
+                    document.getElementById('entry-form').reset();
+                    refreshAll();
+                } else {
+                    showAlert(`❌ Entry failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function handleVehicleExit(e) {
+            e.preventDefault();
+            const licensePlate = document.getElementById('exit-license').value.toUpperCase();
+
+            try {
+                const response = await fetch('/api/exit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ licensePlate })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert(`✅ Vehicle ${licensePlate} exited successfully! Fee: ₹${result.fee?.toFixed(2)}`, 'success');
+                    document.getElementById('exit-form').reset();
+                    refreshAll();
+                } else {
+                    showAlert(`❌ Exit failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function refreshAll() {
+            await Promise.all([
+                loadAvailability(),
+                loadActiveSessions(),
+                loadReport(),
+                loadParkingSpaces()
+            ]);
+        }
+
+        async function loadAvailability() {
+            try {
+                console.log('Loading availability...');
+                const response = await fetch('/api/availability');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log('Availability data:', data);
+
+                document.getElementById('total-capacity').textContent = data.totalCapacity || 0;
+                document.getElementById('occupied-spaces').textContent = data.occupiedSpaces || 0;
+                document.getElementById('available-spaces').textContent = data.availableSpaces || 0;
+                document.getElementById('utilization').textContent = (data.utilizationPercentage || 0).toFixed(1) + '%';
+                document.getElementById('utilization-fill').style.width = (data.utilizationPercentage || 0) + '%';
+            } catch (error) {
+                console.error('Error loading availability:', error);
+                // Show error in UI
+                document.getElementById('total-capacity').textContent = 'Error';
+            }
+        }
+
+        async function loadParkingSpaces() {
+            try {
+                console.log('Loading parking spaces...');
+                const response = await fetch('/api/spaces');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const spaces = await response.json();
+                console.log('Spaces data:', spaces);
+                
+                const container = document.getElementById('parking-spaces');
+                
+                if (!spaces || spaces.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #718096;">No spaces configured</p>';
+                    return;
+                }
+
+                // Sort spaces by zone and then by space ID for consistent display
+                spaces.sort((a, b) => {
+                    if (a.zone !== b.zone) {
+                        return a.zone.localeCompare(b.zone);
+                    }
+                    return a.spaceId.localeCompare(b.spaceId);
+                });
+
+                container.innerHTML = spaces.map(space => {
+                    const statusClass = space.isOccupied ? 'space-occupied' : 'space-available';
+                    const statusText = space.isOccupied ? 'OCCUPIED' : 'AVAILABLE';
+                    const licensePlate = space.licensePlate || '';
+                    
+                    return `
+                        <div class="space-item ${statusClass}" 
+                             title="Space ${space.spaceId} - ${statusText}${licensePlate ? ' (' + licensePlate + ')' : ''}">
+                            <div class="space-id">${space.spaceId}</div>
+                            <div class="space-type">${space.spaceType}</div>
+                            ${licensePlate ? `<div class="space-license">${licensePlate}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading parking spaces:', error);
+                document.getElementById('parking-spaces').innerHTML = 
+                    '<p style="text-align: center; color: #e53e3e;">Error loading spaces</p>';
+            }
+        }
+
+        async function loadActiveSessions() {
+            try {
+                console.log('Loading active sessions...');
+                const response = await fetch('/api/active-sessions');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const sessions = await response.json();
+                console.log('Active sessions data:', sessions);
+
+                const container = document.getElementById('active-sessions');
+                
+                if (!sessions || sessions.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #718096;">No active sessions</p>';
+                    return;
+                }
+
+                container.innerHTML = sessions.map(session => {
+                    const duration = Math.ceil((new Date() - new Date(session.entryTime)) / (1000 * 60));
+                    return `
+                        <div class="session-item">
+                            <div class="session-header">
+                                <span class="license-plate">${session.licensePlate}</span>
+                                <span class="vehicle-type">${getVehicleIcon(getVehicleTypeFromSpace(session.spaceId))} ${getVehicleTypeFromSpace(session.spaceId)}</span>
+                            </div>
+                            <div class="session-details">
+                                <i class="fas fa-parking"></i> Space: ${session.spaceId} | 
+                                <i class="fas fa-clock"></i> ${duration} min | 
+                                <i class="fas fa-calendar"></i> ${new Date(session.entryTime).toLocaleTimeString()}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading active sessions:', error);
+                document.getElementById('active-sessions').innerHTML = 
+                    '<p style="text-align: center; color: #e53e3e;">Error loading sessions</p>';
+            }
+        }
+
+        async function loadReport() {
+            try {
+                console.log('Loading report...');
+                const response = await fetch('/api/report');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const report = await response.json();
+                console.log('Report data:', report);
+
+                document.getElementById('total-revenue').textContent = '₹' + (report.totalRevenue || 0).toFixed(2);
+                document.getElementById('total-sessions').textContent = report.sessionCount || 0;
+                document.getElementById('avg-duration').textContent = (report.averageParkingDuration || 0).toFixed(1);
+            } catch (error) {
+                console.error('Error loading report:', error);
+                document.getElementById('total-revenue').textContent = '₹0.00';
+                document.getElementById('total-sessions').textContent = '0';
+                document.getElementById('avg-duration').textContent = '0';
+            }
+        }
+
+        function updateParkingSpaces(availability) {
+            // This function is now replaced by loadParkingSpaces()
+            // Keeping for backward compatibility but it's not used
+        }
+
+        async function populateDemoData() {
+            try {
+                console.log('Loading sample data...');
+                const response = await fetch('/api/demo/populate', { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log('Demo populate result:', result);
+                
+                if (result.success) {
+                    showAlert('✅ Sample data loaded successfully!', 'success');
+                    // Force refresh after a short delay
+                    setTimeout(() => {
+                        refreshAll();
+                    }, 1000);
+                } else {
+                    showAlert('❌ Failed to load sample data: ' + (result.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error loading sample data:', error);
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function resetDemoData() {
+            try {
+                console.log('Clearing all data...');
+                const response = await fetch('/api/demo/reset', { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log('Demo reset result:', result);
+                
+                if (result.success) {
+                    showAlert('✅ All data cleared successfully!', 'success');
+                    // Force refresh after a short delay
+                    setTimeout(() => {
+                        refreshAll();
+                    }, 500);
+                } else {
+                    showAlert('❌ Failed to clear data: ' + (result.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing data:', error);
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function resetRevenue() {
+            try {
+                console.log('Resetting revenue data...');
+                const response = await fetch('/api/demo/reset-revenue', { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const result = await response.json();
+                console.log('Revenue reset result:', result);
+                
+                if (result.success) {
+                    showAlert('✅ Revenue data reset successfully!', 'success');
+                    // Force refresh after a short delay
+                    setTimeout(() => {
+                        refreshAll();
+                    }, 500);
+                } else {
+                    showAlert('❌ Failed to reset revenue data: ' + (result.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error resetting revenue data:', error);
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        function getVehicleIcon(vehicleType) {
+            switch(vehicleType) {
+                case 'MOTORCYCLE': return '🏍️';
+                case 'TRUCK': return '🚛';
+                case 'VAN': return '🚐';
+                case 'CAR':
+                default: return '🚗';
+            }
+        }
+
+        function getVehicleTypeFromSpace(spaceId) {
+            if (spaceId.startsWith('B')) return 'MOTORCYCLE';
+            if (spaceId.startsWith('C')) return 'TRUCK';
+            if (spaceId.startsWith('D') && spaceId.includes('003')) return 'MOTORCYCLE';
+            if (spaceId.startsWith('D') && spaceId.includes('004')) return 'TRUCK';
+            return 'CAR';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "name": "vehicle-parking-database",
+  "version": "1.0.0",
+  "description": "A comprehensive vehicle parking database management system",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "web": "ts-node src/web/start-web.ts",
+    "web:build": "tsc && node dist/web/start-web.js",
+    "exhibition": "npm run build && npm run web",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "ts-node src/test-integration.ts",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "parking",
+    "database",
+    "vehicle",
+    "management"
+  ],
+  "author": "Vehicle Parking System",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.25",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "fast-check": "^3.15.0",
+    "node-fetch": "^3.3.2",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.0"
+  }
+}
