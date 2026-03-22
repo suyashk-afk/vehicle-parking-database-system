@@ -2,8 +2,6 @@
 
 A comprehensive parking facility management system with real-time space tracking, automated fee calculation, and detailed reporting capabilities.
 
-## 🎓 For College Exhibition
-
 ### Quick Start for Demo
 ```bash
 npm install
